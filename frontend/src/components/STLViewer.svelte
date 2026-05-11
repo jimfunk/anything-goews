@@ -13,7 +13,8 @@
     offsetZ = 0,
     rotateX = 0,
     rotateY = 0,
-    rotateZ = 0
+    rotateZ = 0,
+    clipY = null
   } = $props();
 
   let container;
@@ -30,7 +31,7 @@
     mesh.material.dispose();
   }
 
-  function createMesh(geometry, color) {
+  function createMesh(geometry, color, clipped = false) {
     geometry.computeVertexNormals();
     const material = new THREE.MeshStandardMaterial({
       color,
@@ -38,19 +39,21 @@
       roughness: 0.7,
       side: THREE.DoubleSide,
     });
+    if (clipped && clipY !== null) {
+      material.clippingPlanes = [
+        new THREE.Plane(new THREE.Vector3(0, 1, 0), -clipY),
+      ];
+    }
     const mesh = new THREE.Mesh(geometry, material);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     return mesh;
   }
 
-  function loadMeshFromData(data, color) {
+  function loadMeshFromData(data, color, clipped = false) {
     const loader = new STLLoader();
     const geometry = loader.parse(data);
-    // STL files use Z-up. Three.js uses Y-up.
-    // Rotate -90° around X to convert so the model stands upright.
-    geometry.rotateX(-Math.PI / 2);
-    return createMesh(geometry, color);
+    return createMesh(geometry, color, clipped);
   }
 
   function fitCamera() {
@@ -96,7 +99,7 @@
         scene.add(plateMesh);
       }
       if (uploadedSTLData) {
-        uploadedMesh = loadMeshFromData(uploadedSTLData, 0xe67e22);
+        uploadedMesh = loadMeshFromData(uploadedSTLData, 0xe67e22, true);
         updateUploadedTransform();
         scene.add(uploadedMesh);
       }
@@ -129,6 +132,7 @@
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xffffff);
+    THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
 
     const width = container.clientWidth;
     const height = container.clientHeight;
@@ -138,6 +142,7 @@
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.localClippingEnabled = true;
     container.appendChild(renderer.domElement);
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -150,7 +155,12 @@
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
-    const grid = new THREE.GridHelper(200, 20, 0xcccccc, 0xe8e8e8);
+    const grid = new THREE.GridHelper(400, 40, 0xcccccc, 0xe8e8e8);
+    grid.rotation.x = Math.PI / 2;
+    grid.material.clippingPlanes = [
+      new THREE.Plane(new THREE.Vector3(1, 0, 0), 0),
+      new THREE.Plane(new THREE.Vector3(0, 1, 0), 0),
+    ];
     scene.add(grid);
 
     isInitialized = true;

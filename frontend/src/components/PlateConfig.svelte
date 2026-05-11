@@ -35,7 +35,6 @@
     id="plate-thickness"
     bind:value={plateThickness}
     min={0}
-    max={10}
     steps={[{ value: 0.5, label: '0.5' }, { value: 1, label: '1' }]}
     help="Thickness of the mounting plate"
   />
@@ -45,7 +44,6 @@
     id="extend-bottom"
     bind:value={extendBottom}
     min={0}
-    max={50}
     steps={[{ value: 1, label: '1' }, { value: 5, label: '5' }]}
     help="Extends the bottom edge downward for extra material"
   />

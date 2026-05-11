@@ -289,6 +289,7 @@
             {rotateX}
             {rotateY}
             {rotateZ}
+            clipY={-plateThickness}
           />
         {:else if isGenerating}
           <div class="text-gray-400 text-center">

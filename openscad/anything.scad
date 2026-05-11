@@ -79,9 +79,14 @@ module anything(
             );
 
         if (model_path != "") {
-            translate([offset_x, offset_y, offset_z])
-                rotate([rotate_x, rotate_y, rotate_z])
-                    import(model_path);
+            intersection() {
+                translate([offset_x, offset_y, offset_z])
+                    rotate([rotate_x, rotate_y, rotate_z])
+                        import(model_path);
+                // Clip at the cleat boundary — keep only Y >= -plate_thickness
+                translate([-1000, -plate_thickness, -1000])
+                    cube([2000, 2000, 2000]);
+            }
         }
     }
 }
