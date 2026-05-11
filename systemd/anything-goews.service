@@ -1,0 +1,15 @@
+[Unit]
+Description=Anything GOEWS web interface
+Documentation=https://github.com/jimfunk/anything-goews
+After=network.target
+
+[Service]
+User=goews
+Group=users
+WorkingDirectory=/srv/anything-goews
+ExecStart=/srv/anything-goews/venv/bin/sanic server.server
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
