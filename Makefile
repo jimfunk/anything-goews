@@ -1,6 +1,16 @@
 SHELL := /bin/bash
 
-PYTHON = python3
+PYTHON := $(shell \
+  for cmd in python3 python3.13 python3.12 python3.11; do \
+    if $$cmd -c 'import sys; exit(0 if sys.version_info >= (3,11) else 1)' 2>/dev/null; then \
+      echo $$cmd; \
+      break; \
+    fi; \
+  done)
+
+ifeq ($(PYTHON),)
+$(error No Python >= 3.11 found)
+endif
 
 VIRTUALENV_DIR = venv
 VIRTUALENV = $(VIRTUALENV_DIR)/.stamp
