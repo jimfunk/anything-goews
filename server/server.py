@@ -41,6 +41,7 @@ app.config.OPENAPI_INFO_DESCRIPTION = "Add GOEWS mounting plates to any 3D model
 static_dir = dist_dir if dist_dir.exists() else frontend_dir
 if (static_dir / "assets").exists():
     app.static("/assets/", static_dir / "assets", name="assets")
+app.static("/favicon.svg", dist_dir / "favicon.svg", name="favicon")
 
 @app.middleware("request")
 async def rate_limit_middleware(request):
