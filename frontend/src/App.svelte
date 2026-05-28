@@ -183,8 +183,8 @@
   <title>Anything GOEWS</title>
 </svelte:head>
 
-<main class="bg-gray-100 min-h-screen">
-  <div class="bg-gray-800 text-white p-4 mb-6 flex items-center justify-between">
+<main class="bg-gray-100 min-h-screen lg:h-screen lg:overflow-hidden">
+  <div class="bg-gray-800 text-white p-4 flex items-center justify-between">
     <h1 class="text-xl font-bold">Anything GOEWS</h1>
     <div class="flex items-center gap-6">
       <a href="https://goews.ws" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 hover:text-gray-300">
@@ -204,9 +204,9 @@
     </div>
   </div>
 
-  <div class="flex flex-col lg:flex-row gap-4 p-4">
+  <div class="flex flex-col lg:flex-row gap-4 p-4 lg:h-[calc(100vh-4rem)] lg:overflow-hidden">
     <!-- Parameters Panel -->
-    <div class="lg:w-1/3 flex flex-col gap-4">
+    <div class="lg:w-1/3 flex flex-col gap-4 lg:h-full lg:overflow-y-auto lg:pr-2">
       {#if errorMessage}
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">
           {errorMessage}
@@ -275,8 +275,8 @@
     </div>
 
     <!-- Viewer Panel -->
-    <div class="lg:w-2/3 bg-white rounded-lg shadow p-4">
-      <div class="h-[500px] bg-gray-50 rounded flex items-center justify-center">
+    <div class="lg:w-2/3 bg-white rounded-lg shadow p-4 lg:h-full lg:overflow-hidden lg:flex lg:flex-col">
+      <div class="h-[420px] sm:h-[500px] lg:h-auto lg:flex-1 lg:min-h-0 bg-gray-50 rounded flex items-center justify-center">
         {#if fusedSTLData}
           <STLViewer fusedSTLData={fusedSTLData} />
         {:else if plateSTLData || uploadedSTLData}
