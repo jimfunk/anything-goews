@@ -20,6 +20,7 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         plateUnits, plateThickness, extendBottom, variant, hangerTolerance,
+        boltNotch, boltNotchThickness,
         offsetX, offsetY, offsetZ,
         rotateX, rotateY, rotateZ,
       }));
@@ -34,6 +35,8 @@
   let extendBottom = $state(saved?.extendBottom ?? 0);
   let variant = $state(saved?.variant ?? 'Original');
   let hangerTolerance = $state(saved?.hangerTolerance ?? 0.15);
+  let boltNotch = $state(saved?.boltNotch ?? true);
+  let boltNotchThickness = $state(saved?.boltNotchThickness ?? 3);
 
   // Transform values (applied to uploaded model)
   let offsetX = $state(saved?.offsetX ?? 0);
@@ -43,12 +46,14 @@
   let rotateY = $state(saved?.rotateY ?? 0);
   let rotateZ = $state(saved?.rotateZ ?? 0);
 
-  // Persist state on any change
+  // Persist state on any change, and clear fused result when params change
   $effect(() => {
     plateUnits; plateThickness; extendBottom; variant; hangerTolerance;
+    boltNotch; boltNotchThickness;
     offsetX; offsetY; offsetZ;
     rotateX; rotateY; rotateZ;
     saveState();
+    fusedSTLData = null;
   });
 
   // STL data states
@@ -72,6 +77,8 @@
       formData.append('extend_bottom', extendBottom);
       formData.append('variant', variant === 'Original' ? '0' : '1');
       formData.append('hanger_tolerance', hangerTolerance);
+      formData.append('bolt_notch', boltNotch ? '1' : '0');
+      formData.append('bolt_notch_thickness', boltNotchThickness);
       formData.append('offset_x', 0);
       formData.append('offset_y', 0);
       formData.append('offset_z', 0);
@@ -105,6 +112,8 @@
       formData.append('extend_bottom', extendBottom);
       formData.append('variant', variant === 'Original' ? '0' : '1');
       formData.append('hanger_tolerance', hangerTolerance);
+      formData.append('bolt_notch', boltNotch ? '1' : '0');
+      formData.append('bolt_notch_thickness', boltNotchThickness);
       formData.append('offset_x', offsetX);
       formData.append('offset_y', offsetY);
       formData.append('offset_z', offsetZ);
@@ -148,6 +157,8 @@
     extendBottom = 0;
     variant = 'Original';
     hangerTolerance = 0.15;
+    boltNotch = true;
+    boltNotchThickness = 3;
     offsetX = 0;
     offsetY = 0;
     offsetZ = 0;
@@ -242,6 +253,8 @@
           bind:extendBottom
           bind:variant
           bind:hangerTolerance
+          bind:boltNotch
+          bind:boltNotchThickness
           onchange={debouncedFetchPlate}
         />
       </div>

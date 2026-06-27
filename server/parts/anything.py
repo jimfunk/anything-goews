@@ -40,6 +40,8 @@ class AnythingDefinition(BaseModel):
     extend_bottom: Annotated[float, Field(ge=0, description="Extend bottom of plate in mm")] = 0
     variant: Variant = Variant.ORIGINAL
     hanger_tolerance: Annotated[float, Field(ge=0)] = 0.15
+    bolt_notch: Annotated[bool, Field(description="Include notches for bolts")] = True
+    bolt_notch_thickness: Annotated[float, Field(ge=0, description="Bolt notch thickness in mm")] = 3
     offset_x: Annotated[float, Field(description="X offset in mm")] = 0
     offset_y: Annotated[float, Field(description="Y offset in mm")] = 0
     offset_z: Annotated[float, Field(description="Z offset in mm")] = 0
@@ -76,6 +78,8 @@ async def anything(request: Request):
         plate_thickness = float(request.form.get("plate_thickness", 0))
         extend_bottom = float(request.form.get("extend_bottom", 0))
         hanger_tolerance = float(request.form.get("hanger_tolerance", 0.15))
+        bolt_notch = request.form.get("bolt_notch", "1") == "1"
+        bolt_notch_thickness = float(request.form.get("bolt_notch_thickness", 3))
         offset_x = float(request.form.get("offset_x", 0))
         offset_y = float(request.form.get("offset_y", 0))
         offset_z = float(request.form.get("offset_z", 0))
@@ -128,6 +132,8 @@ async def anything(request: Request):
                 plate_units=plate_units,
                 plate_thickness=plate_thickness,
                 extend_bottom=extend_bottom,
+                bolt_notch=bolt_notch,
+                bolt_notch_thickness=bolt_notch_thickness,
                 offset_x=offset_x,
                 offset_y=offset_y,
                 offset_z=offset_z,
@@ -150,6 +156,8 @@ async def anything(request: Request):
                 extend_bottom=extend_bottom,
                 variant=variant,
                 hanger_tolerance=hanger_tolerance,
+                bolt_notch=bolt_notch,
+                bolt_notch_thickness=bolt_notch_thickness,
                 offset_x=offset_x,
                 offset_y=offset_y,
                 offset_z=offset_z,

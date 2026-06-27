@@ -33,6 +33,8 @@ async def build_fused_model(
     plate_units: int,
     plate_thickness: float,
     extend_bottom: float,
+    bolt_notch: bool,
+    bolt_notch_thickness: float,
     offset_x: float,
     offset_y: float,
     offset_z: float,
@@ -61,6 +63,8 @@ async def build_fused_model(
         "hanger_units": plate_units,
         "plate_thickness": plate_thickness,
         "extend_bottom": extend_bottom,
+        "bolt_notch": bolt_notch,
+        "bolt_notch_thickness": bolt_notch_thickness,
         "offset_x": offset_x,
         "offset_y": offset_y,
         "offset_z": offset_z,
@@ -79,6 +83,8 @@ async def build_fused_model(
                 cmd += ["-D", f'{name}={str(value).lower()}']
             else:
                 cmd += ["-D", f"{name}={value}"]
+
+    logger.info(f"OpenSCAD command params: bolt_notch={bolt_notch}, bolt_notch_thickness={bolt_notch_thickness}")
 
     async with process_semaphore:
         try:

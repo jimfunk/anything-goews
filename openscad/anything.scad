@@ -24,6 +24,12 @@ plate_thickness = 0;
 // Extend bottom of plate in mm
 extend_bottom = 0;
 
+// Include notches for bolts
+bolt_notch = true;
+
+// Bolt notch thickness
+bolt_notch_thickness = 3;
+
 /* [Original model transform parameters] */
 // X offset of original model
 offset_x = 0;
@@ -55,6 +61,8 @@ module anything(
     hanger_units=1,
     plate_thickness=3,
     extend_bottom=0,
+    bolt_notch=true,
+    bolt_notch_thickness=default_plate_thickness,
     offset_x=0,
     offset_y=0,
     offset_z=0,
@@ -67,25 +75,50 @@ module anything(
     hanger_plate_offset = get_hanger_plate_offset(variant, hanger_tolerance);
     total_thickness = plate_thickness + hanger_thickness + hanger_plate_offset;
 
-    union() {
-        translate([0, -total_thickness, 0])
-            hanger_plate(
-                variant=variant,
-                plate_thickness=plate_thickness,
-                hanger_units=hanger_units,
-                hanger_tolerance=hanger_tolerance,
-                outer_radius=plate_outer_radius,
-                extend_bottom=extend_bottom,
-            );
+    difference() {
+        union() {
+            translate([0, -total_thickness, 0])
+                hanger_plate(
+                    variant=variant,
+                    plate_thickness=plate_thickness,
+                    bolt_notch=bolt_notch,
+                    bolt_notch_thickness=bolt_notch_thickness,
+                    hanger_units=hanger_units,
+                    hanger_tolerance=hanger_tolerance,
+                    outer_radius=plate_outer_radius,
+                    extend_bottom=extend_bottom,
+                );
 
-        if (model_path != "") {
-            intersection() {
-                translate([offset_x, offset_y, offset_z])
-                    rotate([rotate_x, rotate_y, rotate_z])
-                        import(model_path);
-                // Clip at the cleat boundary — keep only Y >= -plate_thickness
-                translate([-1000, -plate_thickness, -1000])
-                    cube([2000, 2000, 2000]);
+            if (model_path != "") {
+                intersection() {
+                    translate([offset_x, offset_y, offset_z])
+                        rotate([rotate_x, rotate_y, rotate_z])
+                            import(model_path);
+                    // Clip at the cleat boundary — keep only Y >= -plate_thickness
+                    translate([-1000, -plate_thickness, -1000])
+                        cube([2000, 2000, 2000]);
+                }
+            }
+        }
+
+        if (bolt_notch) {
+            for (i = [0:hanger_units - 1]) {
+                translate([
+                    plate_width / 2 + plate_width * i,
+                    bolt_notch_thickness - plate_thickness - 0.01,
+                    plate_cutout_y_offset + extend_bottom
+                ])
+                    rotate([-90, 0, 0])
+                        cylinder(d=hanger_bolt_notch_head_clearance_diameter, h=1000);
+            }
+            for (i = [0:hanger_units - 1]) {
+                translate([
+                    plate_width / 2 + plate_width * i,
+                    -0.01,
+                    plate_cutout_y_offset + extend_bottom
+                ])
+                    rotate([-90, 0, 0])
+                        cylinder(r=plate_cutout_radius, h=1000);
             }
         }
     }
@@ -99,6 +132,8 @@ anything(
     hanger_units=hanger_units,
     plate_thickness=plate_thickness,
     extend_bottom=extend_bottom,
+    bolt_notch=bolt_notch,
+    bolt_notch_thickness=bolt_notch_thickness,
     offset_x=offset_x,
     offset_y=offset_y,
     offset_z=offset_z,

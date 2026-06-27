@@ -143,6 +143,7 @@ module hanger_plate(
                         hanger_tolerance=hanger_tolerance,
                         extend_bottom=extend_bottom,
                         bolt_notch=bolt_notch,
+                        bolt_notch_thickness=bolt_notch_thickness,
                     );
             }
         }
