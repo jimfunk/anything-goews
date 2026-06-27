@@ -20,8 +20,8 @@
   let container;
   let scene, camera, renderer, controls;
   let plateMesh = null;
-  let uploadedMesh = null;
   let isInitialized = $state(false);
+  let uploadedMesh = null;
   let hasEverLoadedData = false;
 
   function disposeMesh(mesh) {
@@ -53,7 +53,9 @@
   function loadMeshFromData(data, color, clipped = false) {
     const loader = new STLLoader();
     const geometry = loader.parse(data);
-    return createMesh(geometry, color, clipped);
+    const mesh = createMesh(geometry, color, clipped);
+    mesh.rotation.order = 'ZYX';
+    return mesh;
   }
 
   function fitCamera() {
@@ -138,6 +140,7 @@
     const height = container.clientHeight;
 
     camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.up.set(0, 0, 1);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
@@ -202,6 +205,9 @@
 
   // React to transform changes — update uploaded mesh in place (no rebuild)
   $effect(() => {
+    // Read transform props to track them as dependencies
+    rotateX; rotateY; rotateZ;
+    offsetX; offsetY; offsetZ;
     if (isInitialized && uploadedMesh && !fusedSTLData) {
       updateUploadedTransform();
     }
